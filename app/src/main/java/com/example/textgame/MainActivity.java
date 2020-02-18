@@ -1,7 +1,9 @@
 package com.example.textgame;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Events event = new Events();
     Unit unit = new Unit(0, 0, 0);
     int d6, choice, history = 0, serv = 0, cube1 = 0, cube2 = 0, gold, a;
-    String files = "", dateText, timeText, race;
+    String files, dateText, timeText, race;
     Random random = new Random();
 
     final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -67,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button8.setEnabled(false);
         buttonTrade.setEnabled(false);
         play = false;
+
+        SharedPreferences myPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        files = myPreferences.getString("NAME", files);
     }
 
     @Override
@@ -343,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 buttonTrade.setEnabled(false);
                 button7.setEnabled(false);
                 button8.setEnabled(false);
-                files += "" + "| " + dateText + " | " + timeText + " | ПОБЕДА | " + race + " | " + (int) (history / 2) + " | " + unit.hp + " | " + unit.lvl + " | " + unit.gold + " |\n\n";
+                files += "| " + dateText + " | " + timeText + " | ПОБЕДА | " + race + " | " + (int) (history / 2) + " | " + unit.hp + " | " + unit.lvl + " | " + unit.gold + " |\n\n";
             }
 
             if (unit.hp < 1 && unit.lvl > 0) {
@@ -355,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 button7.setEnabled(false);
                 button8.setEnabled(false);
                 unit.hp = 0;
-                files += "" + "| " + dateText + " | " + timeText + " | ПОРАЖЕНИЕ | " + race + " | " + history + " | " + unit.hp + " | " + unit.lvl + " | " + unit.gold + " |\n\n";
+                files += "| " + dateText + " | " + timeText + " | ПОРАЖЕНИЕ | " + race + " | " + history + " | " + unit.hp + " | " + unit.lvl + " | " + unit.gold + " |\n\n";
             }
         }
         scrollview.post(new Runnable() {
@@ -370,6 +375,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         Log.e("Destroy", "onDestroy");
+        SharedPreferences myPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor myEditor = myPreferences.edit();
+        myEditor.putString("NAME", files);
+        myEditor.apply();
     }
 
     @Override
